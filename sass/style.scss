@@ -1,8 +1,22 @@
-$font-stack:    Helvetica, sans-serif;
+$font-stack:    monospace;
 $primary-color: #fff;
 
 body {
   font: 100% $font-stack;
   color: $primary-color;
-  background-color: #BADA55;
+  background-color: #000;
+  margin: 0;
+}
+
+#loadingMessage {
+  background-color: #000;
+  border: 1px solid #fff;
+  width: 150px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -75px;
+  margin-top: -25px;
+  text-align: center;
+  padding: 1em;
 }

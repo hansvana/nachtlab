@@ -1,80 +1,111 @@
 require("babel-polyfill");
-const Dot = require("./Dot.es6");
+const Logo = require("./Logo.es6");
 
-class Logo {
-    constructor(txt) {
-      const g = this.getCanvas();
-      this.canvas = g.next().value;
-      this.context = g.next().value;
+class NachtLab {
 
-      this.text = txt;
-      this.dots = this.getDots(this.prerender());
+  constructor() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
-      this.draw();
-    }
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
+    this.camera.position.set( 0, 0, 500 );
+    this.container = new THREE.Object3D();
+    this.scene.add(this.camera);
 
-    draw() {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.context.fillStyle = "white";
-      this.context.strokeStyle = "white";
-      this.dots.forEach(dot => {
-          dot.draw(this.context);
-          const peer = dot.findPeer(this.dots);
-          if (peer) dot.drawLine(peer,this.context);
+    this.jigglers = [];
+    for (let i = 0; i < 6; i++) {
+      this.jigglers.push({
+        x: 0, y: 0,
+        xV: Math.random()*2 -1,
+        yV: Math.random()*2 -1,
       })
-
-      //window.requestAnimationFrame(() => {this.draw()});
     }
 
-    prerender() {
-      this.context.fillStyle = "white";
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.context.fillStyle = "black";
-      this.context.font = "200px Georgia";
-      this.context.textAlign = "center";
-      this.context.textBaseline= "middle";
+    this.light = new THREE.PointLight( 0xff0000, 1, 0 );
+	  this.light.position.set( -50, 150, 50 );
+		this.scene.add( this.light );
+    this.light2 = new THREE.PointLight( 0x0000ff, 1, 0 );
+    this.light2.position.set( -50, -150, 50 );
+    this.scene.add( this.light2 );
+    this.light3 = new THREE.PointLight( 0xffff00, 1, 0 );
+	  this.light3.position.set( 50, 150, 50 );
+		this.scene.add( this.light3 );
+    // const light4 = new THREE.PointLight( 0x0000ff, 1, 0 );
+    // light4.position.set( 50, -150, 50 );
+    // this.scene.add( light4 );
 
-      const txt = this.text.split("\n");
-      let height = this.canvas.height * .5 - 100;
-      txt.forEach(line => {
-        this.context.fillText(line, this.canvas.width * .5, height);
-        height += 200;
+    this.logo = new Logo("NACHT\nLAB",
+    data => {
+      document.getElementById("loadingMessage").style.display = 'none';
+      data.forEach( obj => {
+        this.container.add(obj);
       })
+    });
 
-      return;
-    }
+    this.scene.add(this.container);
+    this.container.rotation.x = 180 * (Math.PI / 180);
 
-    getDots(dimensions) {
-      let n = 0;
-      let d = [];
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setSize( width, height );
+    document.body.appendChild( this.renderer.domElement );
 
-      while (n < 750) {
-        //const x = this.canvas.width * .5 + Math.random() * dimensions.width - dimensions.width * .5;
-        //const y = this.canvas.height * .5 + Math.random() * 200 - 200 * .5;
-        const x = Math.random() * this.canvas.width ;
-        const y = Math.random() * this.canvas.height;
 
-        const imgData = this.context.getImageData(x, y, 1, 1);
-        if (imgData.data[0] == 0 || imgData.data[1] == 0 || imgData.data[2] == 0) {
-            d.push(new Dot(x, y));
-            n++;
+    this.render();
+  }
+
+  render() {
+  	requestAnimationFrame( () => { this.render() } );
+
+    this.jiggle();
+
+    this.light.position.x = this.jigglers[0].x;
+    this.light.position.y = this.jigglers[0].y;
+    this.light2.position.x = this.jigglers[1].x;
+    this.light2.position.y = this.jigglers[1].y;
+    this.light3.position.x = this.jigglers[2].x;
+    this.light3.position.y = this.jigglers[2].y;
+
+  	this.renderer.render(
+      this.scene,
+      this.camera
+    );
+  }
+
+  jiggle() {
+
+    this.jigglers.forEach( j=> {
+      j.x += j.xV;
+      j.y += j.yV;
+
+      if (j.x < -250 || j.x > 250) j.xV *= -1;
+      if (j.y < -250 || j.y > 250) j.yV *= -1;
+    });
+
+    this.container.traverse( node => {
+      if (node instanceof THREE.Mesh && this.near(node, 80)) {
+          node.rotation.x += 0.01;
         }
+
+    })
+  }
+
+  near(node, minDist) {
+    let isNear = false;
+
+    const f = this.jigglers.find( j => {
+      const a = Math.abs(node.position.x - j.x);
+      const b = Math.abs(node.position.y - j.y);
+      if (a + b < minDist) {
+        return true;
       }
+    })
 
-      return d;
-    }
+    return !!f;
+  }
 
-    *getCanvas() {
-      const c = document.createElement("canvas");
-      c.style.backgroundColor = "black";
-      c.width = window.innerWidth;
-      c.height = window.innerHeight;
-      document.body.appendChild(c);
-      yield c;
-      yield c.getContext("2d");
-    }
 }
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    let l = new Logo("Nacht\nLab");
+window.addEventListener("load", function(event) {
+    const n = new NachtLab();
 });
