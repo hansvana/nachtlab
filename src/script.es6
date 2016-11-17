@@ -9,7 +9,8 @@ class NachtLab {
 
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
-    this.camera.position.set( 0, 0, 500 );
+    //this.camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
+    this.camera.position.z = 500;
     this.container = new THREE.Object3D();
     this.scene.add(this.camera);
 
@@ -23,30 +24,38 @@ class NachtLab {
     }
 
     this.light = new THREE.PointLight( 0xff0000, 1, 0 );
-	  this.light.position.set( -50, 150, 50 );
+	  this.light.position.set( -50, 150, 5 );
 		this.scene.add( this.light );
     this.light2 = new THREE.PointLight( 0x0000ff, 1, 0 );
-    this.light2.position.set( -50, -150, 50 );
+    this.light2.position.set( -50, -150, 5 );
     this.scene.add( this.light2 );
-    this.light3 = new THREE.PointLight( 0xffff00, 1, 0 );
-	  this.light3.position.set( 50, 150, 50 );
+    this.light3 = new THREE.PointLight( 0xff0000, 1, 0 );
+	  this.light3.position.set( 50, 150, 5 );
 		this.scene.add( this.light3 );
-    // const light4 = new THREE.PointLight( 0x0000ff, 1, 0 );
-    // light4.position.set( 50, -150, 50 );
-    // this.scene.add( light4 );
+    const light4 = new THREE.PointLight( 0xaa00aa, 1, 0 );
+    light4.position.set( -100, 0, -100 );
+    this.scene.add( light4 );
+    const light5 = new THREE.PointLight( 0xff0000, 1, 0 );
+    light5.position.set( 100, 0, -50 );
+    this.scene.add( light5 );
 
     this.logo = new Logo("NACHT\nLAB",
-    data => {
+    (poly, lines) => {
       document.getElementById("loadingMessage").style.display = 'none';
-      data.forEach( obj => {
+      poly.forEach( obj => {
         this.container.add(obj);
+      })
+      this.lines = new THREE.Object3D;
+      this.container.add(this.lines);
+      lines.forEach( obj => {
+        this.lines.add(obj);
       })
     });
 
     this.scene.add(this.container);
     this.container.rotation.x = 180 * (Math.PI / 180);
 
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize( width, height );
     document.body.appendChild( this.renderer.domElement );
 
@@ -65,6 +74,17 @@ class NachtLab {
     this.light2.position.y = this.jigglers[1].y;
     this.light3.position.x = this.jigglers[2].x;
     this.light3.position.y = this.jigglers[2].y;
+
+    const d = Date.now();
+
+    this.lines.traverse( obj => {
+      if (typeof obj.geometry !== "undefined") {
+        obj.geometry.vertices.forEach(v => {
+          v.z = Math.sin(d/1000 + v.x)*10;
+        })
+        obj.geometry.verticesNeedUpdate = true;
+      }
+    })
 
   	this.renderer.render(
       this.scene,
