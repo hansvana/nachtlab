@@ -23,19 +23,19 @@ class NachtLab {
       })
     }
 
-    this.light = new THREE.PointLight( 0xff0000, 1, 0 );
+    this.light = new THREE.PointLight( 0xff0000, 2, 0 );
 	  this.light.position.set( -50, 150, 5 );
 		this.scene.add( this.light );
-    this.light2 = new THREE.PointLight( 0x0000ff, 1, 0 );
+    this.light2 = new THREE.PointLight( 0x0000ff, 2, 0 );
     this.light2.position.set( -50, -150, 5 );
     this.scene.add( this.light2 );
-    this.light3 = new THREE.PointLight( 0xff0000, 1, 0 );
+    this.light3 = new THREE.PointLight( 0xff0000, 2, 0 );
 	  this.light3.position.set( 50, 150, 5 );
 		this.scene.add( this.light3 );
-    const light4 = new THREE.PointLight( 0xaa00aa, 1, 0 );
+    const light4 = new THREE.PointLight( 0xaa00aa, 2, 0 );
     light4.position.set( -100, 0, -100 );
     this.scene.add( light4 );
-    const light5 = new THREE.PointLight( 0xff0000, 1, 0 );
+    const light5 = new THREE.PointLight( 0xff0000, 2, 0 );
     light5.position.set( 100, 0, -50 );
     this.scene.add( light5 );
 

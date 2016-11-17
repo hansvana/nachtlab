@@ -36,7 +36,7 @@ class Logo {
 
       txt.forEach(line => {
         const chars = line.split("");
-        let x = this.canvas.width * .5 - (chars.length * .5 * 150);
+        let x = this.canvas.width * .5 - (( chars.length-1 ) * .5 * 140);
         chars.forEach( char => {
           this.context.fillStyle = "black";
           this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -46,7 +46,7 @@ class Logo {
           this.getPolygons(x, y);
           this.getLines(x, y);
 
-          x += 130;
+          x += 140;
         })
         y += 200;
       });
