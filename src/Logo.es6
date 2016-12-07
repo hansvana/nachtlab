@@ -1,4 +1,5 @@
 const Dot = require("./Dot.es6");
+const Wire = require("./Wire.es6");
 
 class Logo {
     constructor(txt, cb) {
@@ -9,11 +10,12 @@ class Logo {
       this.text = txt;
       this.polygons = [];
       this.lines = [];
+      this.wires = [];
       this.prerender();
 
       g.next();
 
-      cb(this.polygons, this.lines);
+      cb(this.polygons, this.lines, this.wires);
     }
 
     draw() {
@@ -132,6 +134,12 @@ class Logo {
               if (Math.random() * 3 > 1) geometryFlat.faces.push( new THREE.Face3( currV, currV+1, currV + xMax + 1 ) );
               if (Math.random() * 3 > 1) geometryWire.faces.push( new THREE.Face3( currV+1, currV + xMax + 2, currV + xMax + 1 ) );
               if (Math.random() * 3 > 1) geometryFlat.faces.push( new THREE.Face3( currV+1, currV + xMax + 2, currV + xMax + 1 ) );
+
+              if (Math.floor(Math.random()*20) == 1) {
+                this.wires.push( new Wire( Math.floor(Math.random()*2)+2,800, 10,
+                                      new THREE.Vector3((txtX + (x * steps - letterWidth)) - (window.innerWidth * .5), (window.innerHeight * .5) - (txtY + (y * steps - letterHeight)), -10),
+                                      Math.floor(Math.random()*20)+1 ));
+              }
           }
         }
       }

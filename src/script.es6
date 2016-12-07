@@ -1,5 +1,7 @@
 require("babel-polyfill");
 const Logo = require("./Logo.es6");
+const Wire = require("./Wire.es6");
+//const Background = require("./Background.es6");
 
 class NachtLab {
 
@@ -8,9 +10,9 @@ class NachtLab {
     const height = window.innerHeight;
 
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
+    this.camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 2000 );
     //this.camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
-    this.camera.position.z = 500;
+    this.camera.position.z = 600;
     this.container = new THREE.Object3D();
     this.scene.add(this.camera);
 
@@ -22,6 +24,8 @@ class NachtLab {
         yV: Math.random()*2 -1,
       })
     }
+
+    this.wires = [];
 
     this.light = new THREE.PointLight( 0xff0000, 2, 0 );
 	  this.light.position.set( -50, 150, 5 );
@@ -40,7 +44,7 @@ class NachtLab {
     this.scene.add( light5 );
 
     this.logo = new Logo("NACHT\nLAB",
-    (poly, lines) => {
+    (poly, lines, wires) => {
       document.getElementById("loadingMessage").style.display = 'none';
       poly.forEach( obj => {
         this.container.add(obj);
@@ -50,7 +54,14 @@ class NachtLab {
       lines.forEach( obj => {
         this.lines.add(obj);
       })
+      wires.forEach( obj => {
+        this.wires.push(obj);
+        this.scene.add(obj.mesh);
+      })
     });
+
+    // this.background = new Background();
+    // this.scene.add(this.background.mesh);
 
     this.scene.add(this.container);
     this.container.rotation.x = 180 * (Math.PI / 180);
@@ -59,12 +70,19 @@ class NachtLab {
     this.renderer.setSize( width, height );
     document.body.appendChild( this.renderer.domElement );
 
+    // this.wire = new Wire( 5, window.innerWidth * .5, 10,
+    //                       new THREE.Vector3(0, 0, -50),
+    //                       new THREE.Euler( 0, -1, -(Math.PI * 0.5)),
+    //                       3 );
+    //this.scene.add(this.wire.mesh);
 
     this.render();
   }
 
   render() {
   	requestAnimationFrame( () => { this.render() } );
+
+    // this.background.update();
 
     this.jiggle();
 
@@ -77,6 +95,8 @@ class NachtLab {
 
     const d = Date.now();
 
+    //this.wire.curve();
+
     this.lines.traverse( obj => {
       if (typeof obj.geometry !== "undefined") {
         obj.geometry.vertices.forEach(v => {
@@ -85,6 +105,10 @@ class NachtLab {
         obj.geometry.verticesNeedUpdate = true;
       }
     })
+
+    this.wires.forEach( wire => {
+      wire.curve(this.scene.position);
+    });
 
   	this.renderer.render(
       this.scene,
