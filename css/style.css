@@ -1,0 +1,17 @@
+body {
+  font: 100% monospace;
+  color: #fff;
+  background-color: #000;
+  margin: 0; }
+
+#loadingMessage {
+  background-color: #000;
+  border: 1px solid #fff;
+  width: 150px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -75px;
+  margin-top: -25px;
+  text-align: center;
+  padding: 1em; }

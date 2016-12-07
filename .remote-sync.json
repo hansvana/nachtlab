@@ -1,0 +1,15 @@
+{
+  "transport": "scp",
+  "uploadOnSave": false,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "server70.hosting2go.nl",
+  "target": "httpdocs/nachtlab",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "hvanarken",
+  "password": "w8woord",
+  "watch": []
+}
