@@ -2,5 +2,3 @@ node_modules
 .idea
 *.iml
 npm_debug.log*
-dist/*
-css/*
